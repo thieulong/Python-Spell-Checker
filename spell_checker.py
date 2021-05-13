@@ -112,4 +112,3 @@ def print_suggestion(word, suggestions):
 word_list = generate_word_list(file="5k-words.txt")
 
 print_suggestion(word=word, suggestions=generate_suggest_points(word=word, word_split=word_split, suggest_dict=generate_suggest_dict(word=word, word_split=word_split, word_list=word_list)))
-
