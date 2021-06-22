@@ -30,8 +30,8 @@ class App(QMainWindow):
 
         self.label = QLabel(info, self)
         self.label.setFont(QFont('Times',20))
-        self.label.move(120,50)
-        self.label.resize(500,50)
+        self.label.move(110,50)
+        self.label.resize(700,50)
 
         self.correct = QLabel("This word is correctly spelled!", self)
         self.correct.setFont(QFont('Times',15))
