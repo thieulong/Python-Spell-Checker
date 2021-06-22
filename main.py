@@ -55,6 +55,7 @@ class App(QMainWindow):
         self.textbox = QLineEdit(self)
         self.textbox.move(20, 150)
         self.textbox.resize(500,40)
+        self.textbox.setPlaceholderText('Enter a word')
         
         self.button = QPushButton('Check', self)
         self.button.move(550,150)
