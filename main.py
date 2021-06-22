@@ -54,7 +54,7 @@ class App(QMainWindow):
         self.suggest = QLabel("", self)
         self.suggest.setFont(QFont('Times',15))
         self.suggest.move(50,200)
-        self.suggest.resize(100,500)
+        self.suggest.resize(1000,500)
         self.suggest.setHidden(True)
     
         self.textbox = QLineEdit(self)
