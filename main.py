@@ -90,7 +90,7 @@ class App(QMainWindow):
             self.definition.setHidden(True)
             self.suggest.setHidden(True)
 
-        elif suggestions == 0:
+        elif word == suggestions[0]:
             self.incorrect.setHidden(True)
             self.correct.setHidden(False)
             self.definition.setHidden(True)
