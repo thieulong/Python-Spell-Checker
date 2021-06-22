@@ -1,15 +1,3 @@
-word = input("Enter a word: ")
-word = word.lower()
-word_split = list(word)
-
-suggest_limit = 10
-
-word_length = len(word)
-
-first_letter = 0
-last_letter = -1
-
-
 def generate_word_list(file):
 
     with open(file) as f:
@@ -22,6 +10,11 @@ def generate_word_list(file):
 
 
 def generate_suggest_dict(word, word_split, word_list, length_limit = 5):
+
+    first_letter = 0
+    last_letter = -1
+
+    word_length = len(word)
 
     suggest = list()
 
@@ -60,7 +53,12 @@ def generate_suggest_dict(word, word_split, word_list, length_limit = 5):
     return suggest_dict
 
 
-def generate_suggest_points(word, word_split, suggest_dict, number_of_suggestions = suggest_limit):
+def generate_suggest_points(word, word_split, suggest_dict, number_of_suggestions = 10):
+
+    word_length = len(word)
+
+    first_letter = 0
+    last_letter = -1
 
     for i in range(len(word_split)):
  
@@ -92,24 +90,26 @@ def generate_suggest_points(word, word_split, suggest_dict, number_of_suggestion
     return top_suggestion
 
 
-def print_suggestion(word, suggestions):
+def generate_suggestion(word, suggestions):
 
     if suggestions == word:
 
-        print("\nThis word is correctly spelled!\n")
+        # print("\nThis word is correctly spelled!\n")
 
-        return
+        return 0
 
     elif len(suggestions) > 1:
 
         print("\nSuggestions for: {}\n".format(word))
 
-        for i in range(len(suggestions)):
+        # for i in range(len(suggestions)):
 
-            print("- {i}. {suggest_word}".format(i=i + 1, suggest_word=suggestions[i]))
+            # print("- {i}. {suggest_word}".format(i=i + 1, suggest_word=suggestions[i]))
+
+        return suggestions
 
 
 word_list = generate_word_list(file="5k-words.txt")
 
-print_suggestion(word=word, suggestions=generate_suggest_points(word=word, word_split=word_split, suggest_dict=generate_suggest_dict(word=word, word_split=word_split, word_list=word_list)))
+# print(generate_suggestion(word=word, suggestions=generate_suggest_points(word=word, word_split=word_split, suggest_dict=generate_suggest_dict(word=word, word_split=word_split, word_list=word_list))))
 
