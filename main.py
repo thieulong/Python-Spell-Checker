@@ -113,7 +113,7 @@ class App(QMainWindow):
 
 if __name__ == '__main__':
     wd = WordDistance(ins_cost=2, del_cost=2, sub_cost=1)
-    word_list = generate_word_list('5k-words.txt')
+    word_list = generate_word_list('word/en/5k-words.txt')
     word_dict = {}
     for i in range(1, 15):
         word_dict[i] = [word for word in word_list if len(word) == i]
