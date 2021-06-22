@@ -111,5 +111,9 @@ def generate_suggestion(word, suggestions):
 
 word_list = generate_word_list(file="5k-words.txt")
 
+<<<<<<< HEAD:spell_check.py
 # print(generate_suggestion(word=word, suggestions=generate_suggest_points(word=word, word_split=word_split, suggest_dict=generate_suggest_dict(word=word, word_split=word_split, word_list=word_list))))
 
+=======
+print_suggestion(word=word, suggestions=generate_suggest_points(word=word, word_split=word_split, suggest_dict=generate_suggest_dict(word=word, word_split=word_split, word_list=word_list)))
+>>>>>>> 36b07577360b5f5289be67238d0d74945e5ad4bc:spell_checker.py
