@@ -100,7 +100,7 @@ def generate_suggestion(word, suggestions):
 
     elif len(suggestions) > 1:
 
-        print("\nSuggestions for: {}\n".format(word))
+        # print("\nSuggestions for: {}\n".format(word))
 
         # for i in range(len(suggestions)):
 

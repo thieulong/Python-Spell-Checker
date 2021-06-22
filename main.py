@@ -39,6 +39,18 @@ class App(QMainWindow):
         self.incorrect.move(30,200)
         self.incorrect.resize(600,50)
         self.incorrect.setHidden(True)
+
+        self.definition = QLabel("", self)
+        self.definition.setFont(QFont('Times',15))
+        self.definition.move(30,250)
+        self.definition.resize(600,50)
+        self.definition.setHidden(True)
+
+        self.suggest = QLabel("", self)
+        self.suggest.setFont(QFont('Times',15))
+        self.suggest.move(50,200)
+        self.suggest.resize(100,500)
+        self.suggest.setHidden(True)
     
         self.textbox = QLineEdit(self)
         self.textbox.move(20, 150)
@@ -58,14 +70,29 @@ class App(QMainWindow):
         word_split = list(word)
         word_list = spell_check.generate_word_list(file="5k-words.txt")
         suggestions = spell_check.generate_suggestion(word=word, suggestions=spell_check.generate_suggest_points(word=word, word_split=word_split, suggest_dict=spell_check.generate_suggest_dict(word=word, word_split=word_split, word_list=word_list)))
-        
-        if suggestions == 0:
+
+        if word == "":
+            self.correct.setHidden(True)
+            self.incorrect.setHidden(True)
+            self.definition.setHidden(True)
+            self.suggest.setHidden(True)
+
+        elif suggestions == 0:
             self.incorrect.setHidden(True)
             self.correct.setHidden(False)
+            self.definition.setHidden(True)
+            self.suggest.setHidden(True)
             
-        else:
+        elif suggestions != 0:
+            for i in range(len(suggestions)):
+                suggestions[i] = "{i}. {suggest}".format(i=i+1, suggest=suggestions[i])
+
             self.correct.setHidden(True)
             self.incorrect.setHidden(False)
+            self.definition.setText("Suggestions for '{}':".format(word))
+            self.definition.setHidden(False)
+            self.suggest.setText('\n'.join(suggestions))
+            self.suggest.setHidden(False)
             
 
         self.textbox.setText("")
