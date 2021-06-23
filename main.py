@@ -111,25 +111,11 @@ class App(QMainWindow):
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     wd = WordDistance(ins_cost=1, del_cost=1, sub_cost=1)
 
     bk_tree = BKNode(" ")
-    bk_tree.generate_from_file(filename='5k-words.txt', word_distance=wd)
-=======
-    wd = WordDistance(ins_cost=2, del_cost=2, sub_cost=1)
-    word_list = generate_word_list('word/en/5k-words.txt')
-    word_dict = {}
-    for i in range(1, 15):
-        word_dict[i] = [word for word in word_list if len(word) == i]
-    k = 2
-    bk_tree_dict = {}
-    for i in range(1, 15):
-        bk_tree = BKNode(word_dict[i][0])
-        for j in range(max(i - k, 1), min(i + k, 15)):
-            bk_tree.generate_from_list(word_dict[j], wd)
-        bk_tree_dict[i] = bk_tree
->>>>>>> 44c40892c5b10fcbab4b3f8792a855a33216550b
+    bk_tree.generate_from_file(filename='word/en/5k-words.txt', word_distance=wd)
+
 
     app = QApplication(sys.argv)
     ex = App(bk_tree, wd)
