@@ -5,6 +5,9 @@ class WordDistance(object):
         self.sub_cost = sub_cost
 
     def find_distance(self, check_s, s):
+        if s == " ":
+            return len(check_s) * self.del_cost
+
         dp = [[0 for _ in range(len(check_s) + 1)] for _ in range(len(s) + 1)]
         for j in range(len(check_s) + 1):
             for i in range(len(s) + 1):
@@ -29,8 +32,27 @@ class BKNode(object):
         self.dic_child = {}
 
     def insert(self, new_word, word_distance):
+        # # Khu de quy
+        # if not self.word:
+        #     self.word = new_word
+        #     return
+        # cur_node = self
+        # while cur_node:
+        #     distance = word_distance.find_distance(new_word, cur_node.word)
+        #     if distance == 0:
+        #         return
+        #     if distance not in cur_node.dic_child:
+        #         new_node = BKNode(new_word)
+        #         new_node.parent = cur_node
+        #         new_node.distance_to_parent = distance
+        #         cur_node.dic_child[distance] = new_node
+        #     else:
+        #         child_node = cur_node.dic_child[distance]
+        #         cur_node = child_node
+
+        # De quy
         if self.word:
-            distance = word_distance.find_distance(self.word, new_word)
+            distance = word_distance.find_distance(new_word, self.word)
             if distance == 0:
                 return
             if distance not in self.dic_child:
@@ -53,81 +75,66 @@ class BKNode(object):
         for word in list_word:
             self.insert(word, word_distance)
 
-    def print_tree(self, block):
+    def __print_tree(self, block):
         print("  "*block + self.word)
         for child in self.dic_child.values():
-            child.print_tree(block + 1)
+            child.__print_tree(block + 1)
 
-    def check(self, check_word, N_pivot, word_distance, lower, upper, result_dic):
-        if self.word:
-            distance = word_distance.find_distance(check_word, self.word)
+    def print_tree(self):
+        self.__print_tree(0)
 
-            if distance <= N_pivot:
-                if distance not in result_dic:
-                    result_dic[distance] = [self.word]
+    def check(self, check_word, word_distance, d_max):
+        return_dict = {}
+        if not self:
+            return
+        S = [self]
+        while S:
+            cur_node = S.pop()
+            du = word_distance.find_distance(check_word, cur_node.word)
+            if du < d_max and cur_node.parent:
+                if du not in return_dict:
+                    return_dict[du] = [cur_node.word]
                 else:
-                    result_dic[distance].append(self.word)
-                for child_distance in self.dic_child:
-                    if lower <= child_distance <= upper:
-                        self.dic_child[child_distance].check(check_word, N_pivot, word_distance, distance - N_pivot, distance + N_pivot, result_dic)
-        return result_dic
+                    return_dict[du].append(cur_node.word)
+            for child_distance in cur_node.dic_child:
+                if abs(child_distance - du) < d_max:
+                    S.append(cur_node.dic_child[child_distance])
+        return return_dict
 
     def get_suggestions(self, check_word, N_pivot, word_distance, no_suggestions):
         count, suggestions = 0, []
-        return_dic = self.check(check_word, N_pivot, word_distance, 0, 20, {})
+        return_dict = self.check(check_word, word_distance, N_pivot)
 
-        for index in sorted(list(return_dic)):
+        for index in sorted(list(return_dict)):
             if count >= no_suggestions:
                 break
-            for w in return_dic[index]:
+            for w in return_dict[index]:
                 suggestions.append(w)
                 count += 1
                 if count >= no_suggestions:
                     break
         return suggestions
 
-
-def generate_word_list(file):
-    with open(file) as f:
-        word_list = f.read().splitlines()
-    word_list = [w.lower() for w in word_list]
-    return word_list
-
-# Create WordDistance object
-# wd = WordDistance(ins_cost=2, del_cost=2, sub_cost=1)
-#
-#
-# word_list = generate_word_list('5k-words.txt')
-# print(len(word_list))
-#
-# word_dict = {}
-# for i in range(1, 15):
-#     word_dict[i] = [word for word in word_list if len(word) == i]
-#
-# k = 2
-# bk_tree_dict = {}
-# for i in range(1, 15):
-#     bk_tree = BKNode(word_dict[i][0])
-#     for j in range(max(i - k, 1), min(i + k, 15)):
-#         bk_tree.generate_from_list(word_dict[j], wd)
-#     bk_tree_dict[i] = bk_tree
-#
-#
 # import time
+# wd = WordDistance(ins_cost=1, del_cost=1, sub_cost=1)
 #
+# bk_tree = BKNode(" ")
+# bk_tree.generate_from_file(filename='5k-words.txt', word_distance=wd)
+#
+#
+# count = 0
 # check_w = 'a'
 # while check_w:
 #     check_w = input("Enter a word: ").lower()
-#     N = len(check_w) + k
+#     N = (len(check_w) + 3) // 4 + 1
 #
 #     pTime = time.time()
-#     l = min(len(check_w), 14)
-#     suggestions_list = bk_tree_dict[l].get_suggestions(check_w, N, wd, no_suggestions=10)
+#     suggestions_list = bk_tree.get_suggestions(check_w, N, wd, no_suggestions=10)
 #     for num in range(len(suggestions_list)):
 #         print(f'{num + 1} -- {suggestions_list[num]}')
 #     cTime = time.time()
-#     print(f'Time for calculations: {int(1000*(cTime - pTime))} ms')
+#     print(f'Time for calculations: {int(1000*(cTime - pTime))} ms, number of calculations {count}')
+#     count = 0
 #
 #     print()
 #     print()
-

@@ -4,13 +4,13 @@ from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication, QWidget, QPushBut
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import pyqtSlot
 import spell_check
-from spell_checker import WordDistance, BKNode, generate_word_list
+from spell_checker import WordDistance, BKNode
 
 class App(QMainWindow):
 
     def __init__(self, bk_tree_dict, wd):
         super().__init__()
-        self.bk_tree_dict = bk_tree_dict
+        self.bk_tree = bk_tree
         self.wd = wd
 
         self.title = 'Spell Checker'
@@ -80,9 +80,8 @@ class App(QMainWindow):
         # suggestions = spell_check.generate_suggestion(word=word, suggestions=spell_check.generate_suggest_points(word=word, word_split=word_split, suggest_dict=spell_check.generate_suggest_dict(word=word, word_split=word_split, word_list=word_list)))
 
         # new
-        N = len(word) + 2
-        l = max(1, min(len(word), 14))
-        suggestions = bk_tree_dict[l].get_suggestions(word, N, wd, no_suggestions=10)
+        N = (len(word) + 3) // 4 + 1
+        suggestions = bk_tree.get_suggestions(word, N, wd, no_suggestions=10)
 
         if word == "":
             self.correct.setHidden(True)
@@ -112,19 +111,11 @@ class App(QMainWindow):
 
 
 if __name__ == '__main__':
-    wd = WordDistance(ins_cost=2, del_cost=2, sub_cost=1)
-    word_list = generate_word_list('5k-words.txt')
-    word_dict = {}
-    for i in range(1, 15):
-        word_dict[i] = [word for word in word_list if len(word) == i]
-    k = 2
-    bk_tree_dict = {}
-    for i in range(1, 15):
-        bk_tree = BKNode(word_dict[i][0])
-        for j in range(max(i - k, 1), min(i + k, 15)):
-            bk_tree.generate_from_list(word_dict[j], wd)
-        bk_tree_dict[i] = bk_tree
+    wd = WordDistance(ins_cost=1, del_cost=1, sub_cost=1)
+
+    bk_tree = BKNode(" ")
+    bk_tree.generate_from_file(filename='5k-words.txt', word_distance=wd)
 
     app = QApplication(sys.argv)
-    ex = App(bk_tree_dict, wd)
+    ex = App(bk_tree, wd)
     sys.exit(app.exec_())
