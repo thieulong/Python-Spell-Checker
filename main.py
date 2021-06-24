@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QLabel, QMainWindow, QApplication, QWidget, QPushBut
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import pyqtSlot
 import spell_check
-from spell_checker import WordDistance, BKNode
+from spell_checker import *
 
 class App(QMainWindow):
 
@@ -111,12 +111,21 @@ class App(QMainWindow):
 
 
 if __name__ == '__main__':
-    wd = WordDistance(ins_cost=1, del_cost=1, sub_cost=1)
+    # Vietnamese
+    wd = VietnameseWordDistance2()
 
     bk_tree = BKNode(" ")
-    bk_tree.generate_from_file(filename='word/en/5k-words.txt', word_distance=wd)
+    bk_tree.generate_from_file(filename='word/vie/Viet22K.txt', word_distance=wd, unicode=True)
 
+    # # English
+    # wd = EnglishWordDistance()
+    #
+    # bk_tree = BKNode(" ")
+    # bk_tree.generate_from_file(filename='word/en/5k-words.txt', word_distance=wd, unicode=False)
 
     app = QApplication(sys.argv)
     ex = App(bk_tree, wd)
     sys.exit(app.exec_())
+
+
+# suggestions co the tra ve 1 list rong, nho handle tinh huong nay nha!

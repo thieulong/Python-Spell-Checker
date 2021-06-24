@@ -1,26 +1,216 @@
+from tqdm import tqdm
+import codecs
+
+
 class WordDistance(object):
-    def __init__(self, ins_cost, del_cost, sub_cost):
-        self.ins_cost = ins_cost
-        self.del_cost = del_cost
-        self.sub_cost = sub_cost
+    pass
+
+
+class EnglishWordDistance(WordDistance):
+
+    def decoder_ch(self, character):
+        return character
+
+    def decoder_str(self, str):
+        return str
 
     def find_distance(self, check_s, s):
         if s == " ":
-            return len(check_s) * self.del_cost
+            return len(check_s)
 
         dp = [[0 for _ in range(len(check_s) + 1)] for _ in range(len(s) + 1)]
         for j in range(len(check_s) + 1):
             for i in range(len(s) + 1):
                 if i == 0:
-                    dp[i][j] = j * self.ins_cost
+                    dp[i][j] = j
                     continue
                 if j == 0:
-                    dp[i][j] = i * self.del_cost
+                    dp[i][j] = i
                     continue
-                sub_cost = self.sub_cost
+                sub_cost = 1
                 if check_s[j - 1] == s[i - 1]:
                     sub_cost = 0
-                dp[i][j] = min(dp[i-1][j] + self.ins_cost, dp[i][j-1] + self.del_cost, dp[i-1][j-1] + sub_cost)
+                dp[i][j] = min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + sub_cost)
+        return dp[-1][-1]
+
+
+class VietnameseWordDistance(WordDistance):
+    def __init__(self):
+
+        self.alphabet_character = 'abcdefghijklmnopqrstuvwxyz1234567890 `~!@#$%^&*()+=-_/.,<>?;:[]{}|'
+        self.lv1_character = 'ăâêôơưđ'
+
+        self.eng_vowels_dict = {
+            'a' : 'aăâ',
+            'e' : 'eê',
+            'i' : 'i',
+            'o' : 'oôơ',
+            'u' : 'uư',
+            'd' : 'dđ'
+        }
+
+        self.vie_vowels_dict = {
+            'a' : 'aáàảãạ',
+            'ă' : 'ăắằẳẵặ',
+            'â' : 'âấầẩẫậ',
+            'e' : 'eéèẻẽẹ',
+            'ê' : 'êếềểễệ',
+            'i' : 'iíìỉĩị',
+            'o' : 'oóòỏõọ',
+            'ô' : 'ôốồổỗộ',
+            'ơ' : 'ơớờởỡợ',
+            'u' : 'uúùủũụ',
+            'ư' : 'ưứừửữự',
+            'd' : 'd',
+            'đ' : 'đ'
+        }
+
+        self.sign_dict = {
+            0 : 'aăâbcdđeêfghijklmnoôơpqrstuưvxyz1234567890 `~!@#$%^&*()+=-_.,<>?;:[]{}|/',
+            1 : 'áắấéếíóốớúứ',
+            2 : 'àằầèềìòồờùừ',
+            3 : 'ảẳẩẻểỉỏổởủử',
+            4 : 'ãẵẫẽễĩõỗỡũữ',
+            5 : 'ạặậẹệịọộợụự',
+        }
+
+    def get_lv(self, character):
+        if not self.get_vie_vowel(character):
+            return 2
+        if not character \
+                or character in self.alphabet_character \
+                or self.get_vie_vowel(character) in self.alphabet_character:
+            return 0
+        if self.get_vie_vowel(character) in self.lv1_character:
+            return 1
+        return 2
+
+    def get_vie_vowel(self, character):
+        for vie_vowel in self.vie_vowels_dict:
+            if character in self.vie_vowels_dict[vie_vowel]:
+                return vie_vowel
+        return None
+
+    def get_eng_vowel(self, character):
+        for eng_vowel in self.eng_vowels_dict:
+            if character in self.eng_vowels_dict[eng_vowel]:
+                return eng_vowel
+        return None
+
+    def get_sign(self, character):
+        for sign_num in self.sign_dict:
+            if character in self.sign_dict[sign_num]:
+                return sign_num
+        return 0
+
+    def ch_distance(self, ch1, ch2):
+        if ch1 == ch2:
+            return 0
+        if ch1 in self.alphabet_character and ch2 in self.alphabet_character:
+            return 1
+
+        if not ch2 or ch2 == " ":
+            if self.get_lv(ch1) >= 1:
+                if self.get_sign(ch1) != 0:
+                    return 2
+                return 1.5
+            if self.get_sign(ch1) != 0:
+                return 1.5
+            return 1
+
+
+        vie_ch1, vie_ch2 = self.get_vie_vowel(ch1), self.get_vie_vowel(ch2)
+        eng_ch1, eng_ch2 = None, None
+        if vie_ch1:
+            eng_ch1 = self.get_eng_vowel(vie_ch1)
+        if vie_ch2:
+            eng_ch2 = self.get_eng_vowel(vie_ch2)
+        sign_ch1, sign_ch2 = self.get_sign(ch1), self.get_sign(ch2)
+        tmp = 0
+        if eng_ch1 == eng_ch2:
+            if vie_ch1 != vie_ch2:
+                tmp += 0.5
+        else:
+            tmp += 1
+            if max(self.get_lv(ch1), self.get_lv(ch2)) >= 1:
+                tmp += 0.5
+
+        if sign_ch1 != sign_ch2:
+            tmp += 0.5
+        return tmp
+
+    def decoder_ch(self, character):
+        return character
+
+    def decoder_str(self, str):
+        return str
+
+    def find_distance(self, check_s, s):
+        if s == " ":
+            return len(check_s)
+
+        dp = [[0 for _ in range(len(check_s) + 1)] for _ in range(len(s) + 1)]
+        for j in range(len(check_s) + 1):
+            for i in range(len(s) + 1):
+                if i == 0 and j == 0:
+                    continue
+                if i == 0:
+                    dp[i][j] = dp[i][j-1] + self.ch_distance(check_s[j-1], "")
+                    continue
+                if j == 0:
+                    dp[i][j] = dp[i][j-1] + self.ch_distance(s[i-1], "")
+                    continue
+                ins_to_s_cost, ins_to_check_s_cost = self.ch_distance(s[i-1], ""), self.ch_distance(check_s[j-1], "")
+
+                sub_cost = self.ch_distance(check_s[j-1], s[i-1])
+                dp[i][j] = min(dp[i - 1][j] + ins_to_s_cost, dp[i][j - 1] + ins_to_check_s_cost, dp[i - 1][j - 1] + sub_cost)
+        return dp[-1][-1]
+
+
+class VietnameseWordDistance2(WordDistance):
+
+    def __init__(self):
+        self.character_decoder_dict = {
+            'a' : 'a', 'á' : 'as', 'à' : 'af', 'ả' : 'ar', 'ã' : 'ax', 'ạ' : 'aj',
+            'ă' : 'aw', 'ắ' : 'aws', 'ằ' : 'awf', 'ẳ' : 'awr', 'ẵ' : 'awx', 'ạ' : 'awj',
+            'â' : 'aa', 'ấ' : 'aas', 'ầ' : 'aaf', 'ẩ' : 'aar', 'ẫ' : 'aax', 'ậ' : 'aaj',
+            'e' : 'e', 'é': 'es', 'è': 'ef', 'ẻ': 'er', 'ẽ': 'ex', 'ẹ': 'ej',
+            'ê' : 'ee', 'ế' : 'ees', 'ề' : 'eef', 'ể' : 'eer', 'ễ' : 'eex', 'ệ' : 'eej',
+            'i' : 'i', 'í' : 'is', 'ì' : 'if', 'ỉ' : 'ir', 'ĩ' : 'ix', 'ị' : 'ij',
+            'o' : 'o', 'ó': 'os', 'ò': 'of', 'ỏ': 'or', 'õ': 'ox', 'ọ': 'oj',
+            'ô' : 'oo', 'ố': 'oos', 'ồ': 'oof', 'ổ': 'oor', 'ỗ': 'oox', 'ộ': 'ooj',
+            'ơ' : 'ow', 'ớ': 'ows', 'ờ': 'owf', 'ở': 'owr', 'ỡ': 'owx', 'ợ': 'owj',
+            'u' : 'u', 'ú': 'us', 'ù': 'uf', 'ủ': 'ur', 'ũ': 'ux', 'ụ': 'uj',
+            'ư' : 'uw', 'ứ': 'uws', 'ừ': 'uwf', 'ử': 'uwr', 'ữ': 'uwx', 'ự': 'uwj',
+            'd' : 'd', 'đ' : 'dd'
+        }
+
+    def decoder_ch(self, character):
+        if character not in self.character_decoder_dict:
+            return character
+        return self.character_decoder_dict[character]
+
+    def decoder_str(self, str):
+        return "".join([self.decoder_ch(ch) for ch in str])
+
+    def find_distance(self, check_s, s):
+        check_s, s = self.decoder_str(check_s), self.decoder_str(s)
+        if s == " ":
+            return len(check_s)
+
+        dp = [[0 for _ in range(len(check_s) + 1)] for _ in range(len(s) + 1)]
+        for j in range(len(check_s) + 1):
+            for i in range(len(s) + 1):
+                if i == 0:
+                    dp[i][j] = j
+                    continue
+                if j == 0:
+                    dp[i][j] = i
+                    continue
+                sub_cost = 1
+                if check_s[j - 1] == s[i - 1]:
+                    sub_cost = 0
+                dp[i][j] = min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + sub_cost)
         return dp[-1][-1]
 
 
@@ -66,13 +256,19 @@ class BKNode(object):
         else:
             self.word = new_word
 
-    def generate_from_file(self, filename, word_distance):
-        with open(filename) as f:
-            for line in f:
+    def generate_from_file(self, filename, word_distance, unicode):
+        if not unicode:
+            with open(filename) as f:
+                for line in tqdm(f):
+                    self.insert(line.strip().lower(), word_distance)
+            return
+
+        with codecs.open(filename, encoding='utf-8') as f:
+            for line in tqdm(f):
                 self.insert(line.strip().lower(), word_distance)
 
     def generate_from_list(self, list_word, word_distance):
-        for word in list_word:
+        for word in tqdm(list_word):
             self.insert(word, word_distance)
 
     def __print_tree(self, block):
@@ -90,7 +286,7 @@ class BKNode(object):
         S = [self]
         while S:
             cur_node = S.pop()
-            du = word_distance.find_distance(check_word, cur_node.word)
+            du = word_distance.find_distance(word_distance.decoder_str(check_word), word_distance.decoder_str(cur_node.word))
             if du < d_max and cur_node.parent:
                 if du not in return_dict:
                     return_dict[du] = [cur_node.word]
@@ -115,12 +311,14 @@ class BKNode(object):
                     break
         return suggestions
 
+
 # import time
-# wd = WordDistance(ins_cost=1, del_cost=1, sub_cost=1)
+# wd = VietnameseWordDistance2()
+#
 #
 # bk_tree = BKNode(" ")
-# bk_tree.generate_from_file(filename='5k-words.txt', word_distance=wd)
-#
+# bk_tree.generate_from_file(filename='word/vie/Viet22K.txt', word_distance=wd, unicode=True)
+# bk_tree.print_tree()
 #
 # count = 0
 # check_w = 'a'
