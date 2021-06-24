@@ -80,7 +80,13 @@ class App(QMainWindow):
         # suggestions = spell_check.generate_suggestion(word=word, suggestions=spell_check.generate_suggest_points(word=word, word_split=word_split, suggest_dict=spell_check.generate_suggest_dict(word=word, word_split=word_split, word_list=word_list)))
 
         # new
-        N = (len(word) + 3) // 4 + 1
+
+        # coef for english word
+        # N = (len(word) + 3) // 4
+
+        # coef for vietnamese word
+        N = 0.5 * ((len(word) + 3) // 4) + 1
+
         suggestions = bk_tree.get_suggestions(word, N, wd, no_suggestions=10)
 
         if word == "":
@@ -112,7 +118,7 @@ class App(QMainWindow):
 
 if __name__ == '__main__':
     # Vietnamese
-    wd = VietnameseWordDistance2()
+    wd = VietnameseWordDistance()
 
     bk_tree = BKNode(" ")
     bk_tree.generate_from_file(filename='word/vie/Viet22K.txt', word_distance=wd, unicode=True)
