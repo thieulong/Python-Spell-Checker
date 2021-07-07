@@ -85,13 +85,19 @@ class App(QMainWindow):
         # N = (len(word) + 3) // 4
 
         # coef for vietnamese word
-        N = 0.5 * ((len(word) + 3) // 4) + 1
+        N = 0.5 * ((len(word) + 2) // 3) + 1
 
         suggestions = bk_tree.get_suggestions(word, N, wd, no_suggestions=10)
 
-        if word == "":
+        if not word.strip():
             self.correct.setHidden(True)
             self.incorrect.setHidden(True)
+            self.definition.setHidden(True)
+            self.suggest.setHidden(True)
+
+        if not suggestions:
+            self.correct.setHidden(True)
+            self.incorrect.setHidden(False)
             self.definition.setHidden(True)
             self.suggest.setHidden(True)
 
