@@ -89,6 +89,7 @@ class App(QMainWindow):
 
         suggestions = bk_tree.get_suggestions(word, N, wd, no_suggestions=10)
 
+<<<<<<< HEAD
         if not word.strip():
             self.correct.setHidden(True)
             self.incorrect.setHidden(True)
@@ -103,21 +104,50 @@ class App(QMainWindow):
 
         elif word == suggestions[0]:
             self.incorrect.setHidden(True)
+=======
+        try:
+
+            if word == "":
+
+                self.correct.setHidden(True)
+                self.incorrect.setHidden(True)
+                self.definition.setHidden(True)
+                self.suggest.setHidden(True)
+
+            elif word == suggestions[0]:
+
+                for i in range(len(suggestions)):
+                    suggestions[i] = "{i}. {suggest}".format(i=i, suggest=suggestions[i])
+
+                self.incorrect.setHidden(True)
+                self.correct.setHidden(False)
+                self.definition.setText("Other words similar to {}:".format(word))
+                self.definition.setHidden(False)
+                self.suggest.setText('\n'.join(suggestions[1:]))
+                self.suggest.setHidden(False)
+                    
+
+            elif suggestions != 0:
+
+                for i in range(len(suggestions)):
+                    suggestions[i] = "{i}. {suggest}".format(i=i, suggest=suggestions[i])
+
+                self.correct.setHidden(True)
+                self.incorrect.setHidden(False)
+                self.definition.setText("Are you trying to mean '{}':".format(suggestions[0][2:]))
+                self.definition.setHidden(False)
+                self.suggest.setText('\n'.join(suggestions[1:]))
+                self.suggest.setHidden(False)
+
+        except IndexError:
+
+            self.correct.setText("Can't find any similar word!")
+>>>>>>> 279be15483da2d2f5c26c1a505fb12986aa7cede
             self.correct.setHidden(False)
             self.definition.setHidden(True)
+            self.incorrect.setHidden(True)
             self.suggest.setHidden(True)
-            
-        elif suggestions != 0:
-            for i in range(len(suggestions)):
-                suggestions[i] = "{i}. {suggest}".format(i=i+1, suggest=suggestions[i])
 
-            self.correct.setHidden(True)
-            self.incorrect.setHidden(False)
-            self.definition.setText("Suggestions for '{}':".format(word))
-            self.definition.setHidden(False)
-            self.suggest.setText('\n'.join(suggestions))
-            self.suggest.setHidden(False)
-            
 
         self.textbox.setText("")
 
