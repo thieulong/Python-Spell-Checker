@@ -6,8 +6,8 @@ from PyQt5.QtCore import pyqtSlot
 import spell_check
 from spell_checker import *
 
-class App(QMainWindow):
 
+class App(QMainWindow):
     def __init__(self, bk_tree_dict, wd):
         super().__init__()
         self.bk_tree = bk_tree
@@ -20,8 +20,6 @@ class App(QMainWindow):
         self.height = 700
         self.initUI()
 
-
-    
     def initUI(self):
         info = "Python Spell Checker Program".upper()
 
@@ -29,46 +27,46 @@ class App(QMainWindow):
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.label = QLabel(info, self)
-        self.label.setFont(QFont('Times',20))
-        self.label.move(110,50)
-        self.label.resize(700,50)
+        self.label.setFont(QFont('Times', 20))
+        self.label.move(110, 50)
+        self.label.resize(700, 50)
 
         self.correct = QLabel("This word is correctly spelled!", self)
-        self.correct.setFont(QFont('Times',15))
-        self.correct.move(30,200)
-        self.correct.resize(600,50)
+        self.correct.setFont(QFont('Times', 15))
+        self.correct.move(30, 200)
+        self.correct.resize(600, 50)
         self.correct.setHidden(True)
 
-        self.incorrect = QLabel("Oops! It seems like this word doesn't existed!", self)
-        self.incorrect.setFont(QFont('Times',15))
-        self.incorrect.move(30,200)
-        self.incorrect.resize(600,50)
+        self.incorrect = QLabel(
+            "Oops! It seems like this word doesn't existed!", self)
+        self.incorrect.setFont(QFont('Times', 15))
+        self.incorrect.move(30, 200)
+        self.incorrect.resize(600, 50)
         self.incorrect.setHidden(True)
 
         self.definition = QLabel("", self)
-        self.definition.setFont(QFont('Times',15))
-        self.definition.move(30,250)
-        self.definition.resize(600,50)
+        self.definition.setFont(QFont('Times', 15))
+        self.definition.move(30, 250)
+        self.definition.resize(600, 50)
         self.definition.setHidden(True)
 
         self.suggest = QLabel("", self)
-        self.suggest.setFont(QFont('Times',15))
-        self.suggest.move(50,200)
-        self.suggest.resize(1000,500)
+        self.suggest.setFont(QFont('Times', 15))
+        self.suggest.move(50, 200)
+        self.suggest.resize(1000, 500)
         self.suggest.setHidden(True)
-    
+
         self.textbox = QLineEdit(self)
         self.textbox.move(20, 150)
-        self.textbox.resize(500,40)
+        self.textbox.resize(500, 40)
         self.textbox.setPlaceholderText('Enter a word')
-        
+
         self.button = QPushButton('Check', self)
-        self.button.move(550,150)
-        self.button.resize(100,40)
-        
+        self.button.move(550, 150)
+        self.button.resize(100, 40)
+
         self.button.clicked.connect(self.show_results)
         self.show()
-    
 
     def show_results(self):
         textboxValue = self.textbox.text()
@@ -89,22 +87,22 @@ class App(QMainWindow):
 
         suggestions = bk_tree.get_suggestions(word, N, wd, no_suggestions=10)
 
-<<<<<<< HEAD
-        if not word.strip():
-            self.correct.setHidden(True)
-            self.incorrect.setHidden(True)
-            self.definition.setHidden(True)
-            self.suggest.setHidden(True)
+        #  <<<<<<< HEAD
+        #  if not word.strip():
+        #  self.correct.setHidden(True)
+        #  self.incorrect.setHidden(True)
+        #  self.definition.setHidden(True)
+        #  self.suggest.setHidden(True)
 
-        if not suggestions:
-            self.correct.setHidden(True)
-            self.incorrect.setHidden(False)
-            self.definition.setHidden(True)
-            self.suggest.setHidden(True)
+        #  if not suggestions:
+        #  self.correct.setHidden(True)
+        #  self.incorrect.setHidden(False)
+        #  self.definition.setHidden(True)
+        #  self.suggest.setHidden(True)
 
-        elif word == suggestions[0]:
-            self.incorrect.setHidden(True)
-=======
+        #  elif word == suggestions[0]:
+        #  self.incorrect.setHidden(True)
+        #  =======
         try:
 
             if word == "":
@@ -117,24 +115,27 @@ class App(QMainWindow):
             elif word == suggestions[0]:
 
                 for i in range(len(suggestions)):
-                    suggestions[i] = "{i}. {suggest}".format(i=i, suggest=suggestions[i])
+                    suggestions[i] = "{i}. {suggest}".format(
+                        i=i, suggest=suggestions[i])
 
                 self.incorrect.setHidden(True)
                 self.correct.setHidden(False)
-                self.definition.setText("Other words similar to {}:".format(word))
+                self.definition.setText(
+                    "Other words similar to {}:".format(word))
                 self.definition.setHidden(False)
                 self.suggest.setText('\n'.join(suggestions[1:]))
                 self.suggest.setHidden(False)
-                    
 
             elif suggestions != 0:
 
                 for i in range(len(suggestions)):
-                    suggestions[i] = "{i}. {suggest}".format(i=i, suggest=suggestions[i])
+                    suggestions[i] = "{i}. {suggest}".format(
+                        i=i, suggest=suggestions[i])
 
                 self.correct.setHidden(True)
                 self.incorrect.setHidden(False)
-                self.definition.setText("Are you trying to mean '{}':".format(suggestions[0][2:]))
+                self.definition.setText("Are you trying to mean '{}':".format(
+                    suggestions[0][2:]))
                 self.definition.setHidden(False)
                 self.suggest.setText('\n'.join(suggestions[1:]))
                 self.suggest.setHidden(False)
@@ -142,12 +143,11 @@ class App(QMainWindow):
         except IndexError:
 
             self.correct.setText("Can't find any similar word!")
->>>>>>> 279be15483da2d2f5c26c1a505fb12986aa7cede
+            #  >>>>>>> 279be15483da2d2f5c26c1a505fb12986aa7cede
             self.correct.setHidden(False)
             self.definition.setHidden(True)
             self.incorrect.setHidden(True)
             self.suggest.setHidden(True)
-
 
         self.textbox.setText("")
 
@@ -157,7 +157,9 @@ if __name__ == '__main__':
     wd = VietnameseWordDistance()
 
     bk_tree = BKNode(" ")
-    bk_tree.generate_from_file(filename='word/vie/Viet22K.txt', word_distance=wd, unicode=True)
+    bk_tree.generate_from_file(filename='word/vie/Viet22K.txt',
+                               word_distance=wd,
+                               unicode=True)
 
     # # English
     # wd = EnglishWordDistance()
@@ -168,6 +170,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App(bk_tree, wd)
     sys.exit(app.exec_())
-
 
 # suggestions co the tra ve 1 list rong, nho handle tinh huong nay nha!
